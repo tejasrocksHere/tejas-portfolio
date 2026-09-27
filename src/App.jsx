@@ -2,6 +2,7 @@ import { useState } from 'react'
 import Loader from './components/Loader.jsx'
 import Nav from './components/Nav.jsx'
 import Scene3D from './components/Scene3D.jsx'
+import CosmicSky from './components/CosmicSky.jsx'
 import Hero from './components/Hero.jsx'
 import Experience from './components/Experience.jsx'
 import Projects from './components/Projects.jsx'
@@ -23,6 +24,9 @@ export default function App() {
   return (
     <>
       {showLoader && <Loader onDone={handleLoaderDone} />}
+      {/* 2D Scintillating Stars & Fragmenting Meteors */}
+      <CosmicSky />
+      {/* 3D Deep Black Hole & Solar System */}
       <Scene3D ready={ready} />
       <Nav />
       <Hero ready={ready} />

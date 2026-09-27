@@ -72,7 +72,7 @@ export default function Hero({ ready }) {
               <span className="stat-num">7</span>
               <span className="stat-glyph">◈</span>
             </div>
-            <span className="stat-text">In-House Builds Shipped</span>
+            <span className="stat-text">Self Made CI/CD Tool</span>
           </div>
 
           <div className="stat-card">

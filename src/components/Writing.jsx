@@ -23,7 +23,7 @@ export default function Writing() {
                                 We put way too much importance on language labels. My LinkedIn educational series strips away language syntax to break down backend engineering through <b>core architectural principles</b>—distributed consensus, database indexing, race conditions, caching strategies, and concurrency patterns.
                             </p>
                             <a
-                                href="https://www.linkedin.com/in/tejas-mundhe"
+                                href="https://www.linkedin.com/in/tejas-mundhe-578bb6232/"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="series-link"

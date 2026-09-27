@@ -1,0 +1,885 @@
+:root {
+  /* Obsidian UI Dark Mode Palette */
+  --bg: #070B11;
+  --bg-card: rgba(12, 18, 28, 0.72);
+  --bg-card-hover: rgba(16, 24, 38, 0.85);
+  --ink: #F0F4F8;
+  --ink-muted: #CBD5E1;
+  --dim: #7E8E9F;
+  --line: rgba(255, 255, 255, 0.08);
+  --line-strong: rgba(255, 255, 255, 0.15);
+
+  /* Luminous Amber / Gold Accent */
+  --accent: #E8A838;
+  --accent-glow: rgba(232, 168, 56, 0.35);
+  --accent-bg: rgba(232, 168, 56, 0.09);
+  --accent-ink: #170E02;
+
+  --mono: 'IBM Plex Mono', ui-monospace, Menlo, monospace;
+  --disp: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
+  --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--disp);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.wrap {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+#bg-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ==========================================================================
+   DESIGN SPELL: Live Radar Availability Pill
+   ========================================================================== */
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(14, 22, 34, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--line);
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--dim);
+  margin-bottom: 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.radar-dot {
+  position: relative;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #34d399;
+}
+
+.radar-ping {
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  background: #34d399;
+  opacity: 0.75;
+  animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+@keyframes ping {
+
+  75%,
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+
+.status-label {
+  color: var(--ink-muted);
+}
+
+/* ==========================================================================
+   NAVIGATION
+   ========================================================================== */
+nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 32px;
+  background: rgba(7, 11, 17, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--line);
+  font-family: var(--mono);
+  font-size: 12.5px;
+  letter-spacing: 0.02em;
+}
+
+.logo {
+  font-family: var(--disp);
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: -0.02em;
+}
+
+.logo::after {
+  content: '.';
+  color: var(--accent);
+}
+
+.navlinks {
+  display: flex;
+  gap: 28px;
+  align-items: center;
+}
+
+.navlinks a {
+  color: var(--dim);
+  position: relative;
+  padding: 4px 0;
+  transition: color 0.2s var(--ease-spring);
+}
+
+.navlinks a:hover {
+  color: var(--ink);
+}
+
+.navlinks a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 0;
+  height: 1px;
+  background: var(--accent);
+  transition: width 0.25s var(--ease-spring);
+}
+
+.navlinks a:hover::after {
+  width: 100%;
+}
+
+.nav-singularity-btn {
+  background: var(--accent-bg);
+  color: var(--accent);
+  border: 1px solid rgba(232, 168, 56, 0.28);
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-family: var(--mono);
+  font-size: 11px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  cursor: pointer;
+  transition: all 0.25s var(--ease-spring);
+}
+
+.nav-singularity-btn:hover {
+  background: rgba(232, 168, 56, 0.18);
+  border-color: var(--accent);
+  box-shadow: 0 0 16px rgba(232, 168, 56, 0.25);
+  transform: translateY(-1px);
+}
+
+.nav-singularity-btn .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent);
+}
+
+/* ==========================================================================
+   HERO SECTION
+   ========================================================================== */
+.hero {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 140px 32px 70px;
+}
+
+.hero-inner {
+  max-width: 1120px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.hero h1 {
+  font-size: clamp(3rem, 7.8vw, 5.8rem);
+  font-weight: 700;
+  line-height: 0.98;
+  letter-spacing: -0.035em;
+  overflow: hidden;
+}
+
+.hero h1 span {
+  display: inline-block;
+  will-change: transform;
+}
+
+.hero-subheading {
+  font-family: var(--mono);
+  font-size: 14px;
+  color: var(--accent);
+  margin-top: 16px;
+  letter-spacing: 0.01em;
+}
+
+.hero-subheading .sep {
+  color: var(--line-strong);
+  margin: 0 6px;
+}
+
+.hero p.tag {
+  max-width: 620px;
+  color: var(--dim);
+  font-size: 16.5px;
+  line-height: 1.65;
+  margin-top: 18px;
+}
+
+/* ==========================================================================
+   OBSIDIAN STAT CARDS (Rare UI tactile metrics)
+   ========================================================================== */
+.meta-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-top: 36px;
+}
+
+.stat-card {
+  background: var(--bg-card);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--line);
+  padding: 16px 18px;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  transition: all 0.25s var(--ease-spring);
+}
+
+.stat-card:hover {
+  border-color: rgba(232, 168, 56, 0.4);
+  background: var(--bg-card-hover);
+  transform: translateY(-2px);
+}
+
+.stat-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 4px;
+}
+
+.stat-num {
+  font-family: var(--disp);
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+}
+
+.stat-glyph {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--accent);
+  opacity: 0.75;
+}
+
+.stat-text {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--dim);
+  letter-spacing: 0.02em;
+}
+
+/* ==========================================================================
+   OBSIDIAN BUTTONS
+   ========================================================================== */
+.cta-group {
+  display: flex;
+  gap: 14px;
+  margin-top: 36px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.btn {
+  font-family: var(--mono);
+  font-size: 13px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.25s var(--ease-spring);
+  border: none;
+}
+
+.btn-obsidian-primary {
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-weight: 600;
+  padding: 13px 22px;
+  box-shadow: 0 0 24px -4px var(--accent-glow), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.btn-obsidian-primary:hover {
+  filter: brightness(1.08);
+  box-shadow: 0 0 32px -2px var(--accent-glow), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.btn-arrow {
+  transition: transform 0.2s var(--ease-spring);
+}
+
+.btn-obsidian-primary:hover .btn-arrow {
+  transform: translateY(2px);
+}
+
+.cta-sub-row {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-obsidian-sub {
+  background: rgba(14, 22, 34, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: var(--ink-muted);
+  border: 1px solid var(--line);
+  padding: 12px 18px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.btn-obsidian-sub:hover {
+  border-color: var(--line-strong);
+  color: var(--ink);
+  background: rgba(20, 30, 46, 0.9);
+}
+
+.sub-arrow {
+  color: var(--dim);
+  font-size: 11px;
+  transition: transform 0.2s var(--ease-spring);
+}
+
+.btn-obsidian-sub:hover .sub-arrow {
+  transform: translate(2px, -2px);
+  color: var(--accent);
+}
+
+.btn-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.email-btn.copied {
+  border-color: #34d399;
+  color: #34d399;
+  background: rgba(52, 211, 153, 0.1);
+}
+
+/* ==========================================================================
+   SECTIONS & SECTION HEADERS
+   ========================================================================== */
+section {
+  position: relative;
+  z-index: 1;
+  padding: 95px 0;
+}
+
+.sec-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 50px;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 18px;
+}
+
+.sec-head h2 {
+  font-size: clamp(1.75rem, 3.2vw, 2.3rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.sec-head .idx {
+  font-family: var(--mono);
+  color: var(--dim);
+  font-size: 12.5px;
+}
+
+/* ==========================================================================
+   PROJECTS: SPOTLIGHT MOUSE TRACKING (Obsidian UI + Rare UI)
+   ========================================================================== */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 20px;
+}
+
+.obsidian-card {
+  position: relative;
+  background: var(--bg-card);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 30px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  transition: border-color 0.3s var(--ease-spring), transform 0.3s var(--ease-spring);
+}
+
+/* Dynamic Radial Spotlight follows mouse cursor */
+.card-spotlight {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(600px circle at var(--spotlight-x, 50%) var(--spotlight-y, 50%),
+      rgba(232, 168, 56, 0.08),
+      transparent 45%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.obsidian-card:hover .card-spotlight {
+  opacity: 1;
+}
+
+.obsidian-card:hover {
+  border-color: rgba(232, 168, 56, 0.35);
+  transform: translateY(-2px);
+}
+
+.card:nth-child(1) {
+  grid-column: span 7;
+}
+
+.card:nth-child(2) {
+  grid-column: span 5;
+}
+
+.card:nth-child(3) {
+  grid-column: span 5;
+}
+
+.card:nth-child(4) {
+  grid-column: span 7;
+}
+
+.card:nth-child(5) {
+  grid-column: span 6;
+}
+
+.card:nth-child(6) {
+  grid-column: span 6;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.card h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.live-pill {
+  font-family: var(--mono);
+  font-size: 11px;
+  background: var(--accent-bg);
+  color: var(--accent);
+  border: 1px solid rgba(232, 168, 56, 0.3);
+  padding: 4px 10px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.live-pill:hover {
+  background: rgba(232, 168, 56, 0.2);
+  border-color: var(--accent);
+}
+
+.pill-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.card .stack {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--accent);
+  margin-top: 10px;
+  letter-spacing: 0.01em;
+}
+
+.card p {
+  color: var(--dim);
+  font-size: 14.5px;
+  line-height: 1.65;
+  margin-top: 16px;
+}
+
+/* ==========================================================================
+   EXPERIENCE TIMELINE
+   ========================================================================== */
+.tl {
+  position: relative;
+  padding-left: 36px;
+}
+
+.tl-line {
+  position: absolute;
+  left: 6px;
+  top: 6px;
+  bottom: 6px;
+  width: 1px;
+  background: var(--line);
+}
+
+.tl-progress {
+  position: absolute;
+  left: 6px;
+  top: 6px;
+  width: 1px;
+  background: var(--accent);
+  height: 0;
+  box-shadow: 0 0 8px var(--accent);
+}
+
+.role {
+  position: relative;
+  margin-bottom: 64px;
+}
+
+.role:last-child {
+  margin-bottom: 0;
+}
+
+.role::before {
+  content: '';
+  position: absolute;
+  left: -36px;
+  top: 6px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--bg);
+  border: 2px solid var(--accent);
+  box-shadow: 0 0 10px rgba(232, 168, 56, 0.4);
+}
+
+.role h3 {
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.role .co {
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--accent);
+  margin-top: 6px;
+}
+
+.role .dates {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--dim);
+  margin-top: 2px;
+}
+
+.role ul {
+  margin-top: 16px;
+  max-width: 680px;
+}
+
+.role li {
+  list-style: none;
+  color: var(--dim);
+  font-size: 14.5px;
+  line-height: 1.65;
+  padding-left: 18px;
+  position: relative;
+  margin-bottom: 10px;
+}
+
+.role li::before {
+  content: '—';
+  position: absolute;
+  left: 0;
+  color: var(--accent);
+}
+
+/* ==========================================================================
+   TOOLSET (Obsidian Chips with Sub-pixel highlight)
+   ========================================================================== */
+.skillgrp {
+  margin-bottom: 30px;
+}
+
+.skillgrp .label {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--dim);
+  margin-bottom: 12px;
+  letter-spacing: 0.03em;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.chip {
+  font-family: var(--mono);
+  font-size: 12px;
+  border: 1px solid var(--line);
+  padding: 7px 14px;
+  border-radius: 6px;
+  color: var(--ink-muted);
+  background: var(--bg-card);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  transition: all 0.2s var(--ease-spring);
+}
+
+.chip:hover {
+  border-color: rgba(232, 168, 56, 0.4);
+  color: var(--ink);
+  transform: translateY(-1px);
+}
+
+.chip-highlight {
+  border-color: rgba(232, 168, 56, 0.4);
+  background: var(--accent-bg);
+  color: #ffefd1;
+}
+
+.chip-icon {
+  width: 15px;
+  height: 15px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.chip-bullet {
+  color: var(--accent);
+  font-size: 10px;
+}
+
+/* ==========================================================================
+   ENGINEERING & INSIGHTS (LINKEDIN SERIES + DSA)
+   ========================================================================== */
+.insights-container {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 28px;
+  align-items: start;
+}
+
+.insights-details {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.insight-card {
+  border: 1px solid var(--line);
+  padding: 32px;
+  border-radius: 10px;
+  background: var(--bg-card);
+  backdrop-filter: blur(12px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.insight-card .badge {
+  font-family: var(--mono);
+  font-size: 11px;
+  background: var(--accent-bg);
+  color: var(--accent);
+  border: 1px solid rgba(232, 168, 56, 0.3);
+  padding: 4px 10px;
+  border-radius: 999px;
+  display: inline-block;
+  margin-bottom: 14px;
+}
+
+.insight-card h3 {
+  font-size: 1.45rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.insight-card p {
+  font-size: 14.5px;
+  line-height: 1.7;
+  color: var(--dim);
+  margin-bottom: 20px;
+}
+
+.insight-card p b {
+  color: var(--ink);
+}
+
+.series-link {
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--accent);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-bottom: 1px solid rgba(232, 168, 56, 0.4);
+  padding-bottom: 2px;
+  transition: all 0.2s ease;
+}
+
+.series-link:hover {
+  border-color: var(--accent);
+  transform: translateX(4px);
+}
+
+.insight-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.insight-subcard {
+  border: 1px solid var(--line);
+  padding: 22px;
+  border-radius: 8px;
+  background: var(--bg-card);
+  backdrop-filter: blur(10px);
+}
+
+.subcard-stat {
+  font-family: var(--disp);
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+.subcard-title {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--ink);
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.insight-subcard p {
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--dim);
+}
+
+.embed-wrapper {
+  width: 100%;
+  max-width: 504px;
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.6);
+}
+
+/* ==========================================================================
+   EDUCATION & CONTACT
+   ========================================================================== */
+.edu-line {
+  font-family: var(--mono);
+  font-size: 14px;
+  color: var(--dim);
+  border-left: 2px solid var(--accent);
+  padding-left: 20px;
+}
+
+.edu-line b {
+  color: var(--ink);
+  font-family: var(--disp);
+}
+
+.term {
+  font-family: var(--mono);
+  font-size: 14px;
+  line-height: 2.2;
+  background: var(--bg-card);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--line);
+  padding: 26px;
+  border-radius: 8px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.term .p1 {
+  color: var(--accent);
+}
+
+.term a {
+  color: var(--ink);
+  border-bottom: 1px solid var(--line);
+  transition: all 0.2s ease;
+}
+
+.term a:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+footer {
+  position: relative;
+  z-index: 1;
+  padding: 40px 32px 60px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--dim);
+  border-top: 1px solid var(--line);
+}

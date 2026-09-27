@@ -1,0 +1,118 @@
+/* ==========================================================================
+   RESPONSIVE CRAFT ADAPTATIONS (Obsidian UI + Rare UI + Design Spells)
+   ========================================================================== */
+
+@media screen and (max-width: 1024px) {
+    .wrap {
+        padding: 0 24px;
+    }
+
+    .meta-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .card:nth-child(n) {
+        grid-column: span 6 !important;
+    }
+
+    .insights-container {
+        grid-template-columns: 1fr;
+    }
+
+    .embed-wrapper {
+        max-width: 100%;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    nav {
+        padding: 14px 20px;
+    }
+
+    .navlinks {
+        gap: 14px;
+        font-size: 11.5px;
+    }
+
+    .hero {
+        min-height: auto;
+        padding: 105px 20px 50px;
+    }
+
+    .hero-inner {
+        background: radial-gradient(circle at 50% 0%, rgba(14, 22, 34, 0.82) 0%, rgba(7, 11, 17, 0.95) 100%);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        padding: 24px 18px;
+        border-radius: 12px;
+        border: 1px solid var(--line);
+    }
+
+    .hero h1 {
+        font-size: clamp(2.4rem, 10vw, 3.4rem);
+    }
+
+    .meta-stats {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+    .stat-card {
+        padding: 12px 14px;
+    }
+
+    .stat-num {
+        font-size: 1.25rem;
+    }
+
+    .cta-group {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .btn-obsidian-primary {
+        justify-content: center;
+        width: 100%;
+    }
+
+    .cta-sub-row {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+    }
+
+    .btn-obsidian-sub {
+        padding: 10px 6px;
+        justify-content: center;
+        font-size: 11.5px;
+    }
+
+    .card:nth-child(n) {
+        grid-column: span 12 !important;
+        padding: 22px;
+    }
+
+    .insight-grid-2 {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .status-pill {
+        font-size: 10.5px;
+        padding: 5px 12px;
+    }
+
+    .meta-stats {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+
+    .cta-sub-row {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .sub-arrow {
+        display: none;
+    }
+}

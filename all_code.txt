@@ -1,0 +1,2126 @@
+
+================================================================================
+FILE: index.html
+================================================================================
+
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Tejas Mundhe — Software Engineer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+<div id="root"></div>
+<script type="module" src="/src/main.jsx"></script>
+</body>
+</html>
+
+
+
+================================================================================
+FILE: package.json
+================================================================================
+
+{
+  "name": "tejas-mundhe-portfolio",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "three": "^0.160.0",
+    "gsap": "^3.12.5"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.1",
+    "vite": "^5.4.0"
+  }
+}
+
+
+
+================================================================================
+FILE: src\App.jsx
+================================================================================
+
+import { useState } from 'react'
+import Loader from './components/Loader.jsx'
+import Nav from './components/Nav.jsx'
+import Scene3D from './components/Scene3D.jsx'
+import Hero from './components/Hero.jsx'
+import Experience from './components/Experience.jsx'
+import Projects from './components/Projects.jsx'
+import Writing from './components/Writing.jsx'
+import Skills from './components/Skills.jsx'
+import Education from './components/Education.jsx'
+import Contact from './components/Contact.jsx'
+import Footer from './components/Footer.jsx'
+
+export default function App() {
+  const [ready, setReady] = useState(false)
+  const [showLoader, setShowLoader] = useState(true)
+
+  const handleLoaderDone = () => {
+    setReady(true)
+    setShowLoader(false)
+  }
+
+  return (
+    <>
+      {showLoader && <Loader onDone={handleLoaderDone} />}
+      <Scene3D ready={ready} />
+      <Nav />
+      <Hero ready={ready} />
+      <Experience />
+      <Projects />
+      <Writing />
+      <Skills />
+      <Education />
+      <Contact />
+      <Footer />
+    </>
+  )
+}
+
+
+================================================================================
+FILE: src\components\Contact.jsx
+================================================================================
+
+import { contact } from '../data/content.js'
+
+export default function Contact() {
+  return (
+    <section id="contact">
+      <div className="wrap">
+        <div className="sec-head"><h2>Get in touch</h2></div>
+        <div className="term">
+          <div><span className="p1">tejas@systems</span>:~$ contact</div>
+          <div>→ email <a href={`mailto:${contact.email}`}>{contact.email}</a></div>
+          <div>→ phone <a href={`tel:${contact.phone.replace(/\s+/g, '')}`}>{contact.phone}</a></div>
+          <div>→ linkedin <a href={contact.linkedin} target="_blank" rel="noopener">/tejas-mundhe</a></div>
+          <div>→ Leetcode <a href={contact.leetcode} target="_blank" rel="noopener">/tejasmundhe123</a></div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+
+
+================================================================================
+FILE: src\components\Education.jsx
+================================================================================
+
+import { education } from '../data/content.js'
+
+export default function Education() {
+  return (
+    <section>
+      <div className="wrap">
+        <div className="sec-head"><h2>Education</h2></div>
+        <div className="edu-line">
+          <b>{education.school}</b> — {education.degree}<br />{education.dates}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+
+
+================================================================================
+FILE: src\components\Experience.jsx
+================================================================================
+
+import { useEffect, useRef } from 'react'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { experience } from '../data/content.js'
+
+export default function Experience() {
+  const tlRef = useRef(null)
+  const progRef = useRef(null)
+
+  useEffect(() => {
+    const st = ScrollTrigger.create({
+      trigger: tlRef.current, start: 'top 70%', end: 'bottom 80%', scrub: 0.4,
+      onUpdate: self => { if (progRef.current) progRef.current.style.height = self.progress * 100 + '%' }
+    })
+    return () => st.kill()
+  }, [])
+
+  return (
+    <section id="work">
+      <div className="wrap">
+        <div className="sec-head"><h2>Systems built</h2><span className="idx">2025 — present</span></div>
+        <div className="tl" ref={tlRef}>
+          <div className="tl-line"></div>
+          <div className="tl-progress" ref={progRef}></div>
+          {experience.map(role => (
+            <div className="role" key={role.title}>
+              <h3>{role.title}</h3>
+              <div className="co">{role.company}</div>
+              <div className="dates">{role.dates}</div>
+              <ul>{role.points.map(p => <li key={p}>{p}</li>)}</ul>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+
+
+================================================================================
+FILE: src\components\Footer.jsx
+================================================================================
+
+export default function Footer() {
+  return <footer>Built and maintained by Tejas Mundhe</footer>
+}
+
+
+
+================================================================================
+FILE: src\components\Hero.jsx
+================================================================================
+
+import { useEffect, useRef, useState } from 'react'
+import gsap from 'gsap'
+import { contact } from '../data/content.js'
+
+export default function Hero({ ready }) {
+  const headlineRef = useRef(null)
+  const tagRef = useRef(null)
+  const metaRef = useRef(null)
+  const ctaRef = useRef(null)
+  const [copied, setCopied] = useState(false)
+
+  useEffect(() => {
+    if (!ready) return
+    const spans = headlineRef.current.querySelectorAll('span')
+    const fadeEls = [tagRef.current, metaRef.current, ctaRef.current]
+    const tl = gsap.timeline({ defaults: { ease: 'power3.out' } })
+    tl.from(spans, { yPercent: 110, duration: 0.9, stagger: 0.08 })
+      .to(fadeEls, { opacity: 1, duration: 0.7, stagger: 0.12 }, '-=0.4')
+  }, [ready])
+
+  const magnetic = e => {
+    const r = e.currentTarget.getBoundingClientRect()
+    const x = e.clientX - r.left - r.width / 2
+    const y = e.clientY - r.top - r.height / 2
+    e.currentTarget.style.transform = `translate(${x * 0.25}px, ${y * 0.35}px)`
+  }
+  const resetMagnetic = e => { e.currentTarget.style.transform = 'translate(0,0)' }
+
+  const handleCopyEmail = (e) => {
+    e.preventDefault()
+    navigator.clipboard.writeText(contact.email)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2400)
+  }
+
+  return (
+    <section className="hero">
+      <div className="hero-inner">
+        <h1 id="headline" ref={headlineRef}><span>Tejas</span> <span>Mundhe.</span></h1>
+        <p className="role">Software Development Engineer, SBI General Insurance</p>
+        <p className="tag fade" ref={tagRef} style={{ opacity: 0 }}>
+          Basically, I build slick, beautiful Full stack Projects backed by systems that won't crash when everyone decides to use them at once. Day-to-day, that means great-looking UIs on top of scalable APIs and bulletproof backends. Best part? Zero data leaks, zero security flags, and zero heart attacks for the compliance team.
+        </p>
+        <div className="meta-row fade" ref={metaRef} style={{ opacity: 0 }}>
+          <div>Thane, India</div>
+          <div>1,500+ DSA Solved</div>
+          <div>System Design (HLD & LLD)</div>
+          <div>7 In-House Systems Shipped</div>
+        </div>
+        <div className="cta-row fade" ref={ctaRef} style={{ opacity: 0 }}>
+          <a className="btn btn-primary" href="#builds" onMouseMove={magnetic} onMouseLeave={resetMagnetic}>
+            See the builds
+          </a>
+          <a className="btn btn-outline" href="#series" onMouseMove={magnetic} onMouseLeave={resetMagnetic}>
+            Backend Series ↗
+          </a>
+          <a
+            className="btn btn-outline"
+            href="/Tejas_Resume.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            onMouseMove={magnetic}
+            onMouseLeave={resetMagnetic}
+          >
+            Resume ↗
+          </a>
+          <button
+            type="button"
+            className={`btn btn-outline email-btn ${copied ? 'copied' : ''}`}
+            onClick={handleCopyEmail}
+            onMouseMove={magnetic}
+            onMouseLeave={resetMagnetic}
+            title="Click to copy email address"
+          >
+            {copied ? '✓ Copied to clipboard!' : 'Email Tejas'}
+          </button>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+
+================================================================================
+FILE: src\components\Loader.jsx
+================================================================================
+
+import { useEffect, useRef } from 'react'
+import gsap from 'gsap'
+
+export default function Loader({ onDone }) {
+  const rootRef = useRef(null)
+  const fillRef = useRef(null)
+  const dotsRef = useRef(null)
+
+  useEffect(() => {
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    let dots = 0
+    const dotTimer = setInterval(() => {
+      dots = (dots + 1) % 4
+      if (dotsRef.current) dotsRef.current.textContent = '.'.repeat(dots)
+    }, 220)
+
+    const tl = gsap.timeline({
+      onComplete: () => {
+        clearInterval(dotTimer)
+        onDone()
+      }
+    })
+    tl.to(fillRef.current, { width: '100%', duration: reduced ? 0.2 : 1.1, ease: 'power1.inOut' })
+      .to(rootRef.current, { opacity: 0, duration: 0.5, ease: 'power2.out' }, '-=0.1')
+
+    return () => {
+      clearInterval(dotTimer)
+      tl.kill()
+    }
+  }, [onDone])
+
+  return (
+    <div id="loader" ref={rootRef}>
+      <div className="loader-label">
+        <span className="p1">tejas@systems</span>:~$ initializing universe<span ref={dotsRef}></span>
+      </div>
+      <div className="loader-bar"><div className="loader-fill" ref={fillRef}></div></div>
+    </div>
+  )
+}
+
+
+
+================================================================================
+FILE: src\components\Nav.jsx
+================================================================================
+
+export default function Nav({ singularityActive, onToggleSingularity }) {
+  return (
+    <nav>
+      <div className="logo">TM</div>
+      <div className="navlinks">
+        <a href="#work">Work</a>
+        <a href="#builds">Builds</a>
+        <a href="#series">Series</a>
+        <a href="#contact">Contact</a>
+        <button
+          className={`nav-singularity-btn ${singularityActive ? 'active' : ''}`}
+          onClick={onToggleSingularity}
+          title={singularityActive ? 'Click to restore screen' : 'Click to unleash Black Hole'}
+        >
+          <span className="dot" />
+          {singularityActive ? 'Singularity Active' : 'Black Hole'}
+        </button>
+      </div>
+    </nav>
+  )
+}
+
+
+================================================================================
+FILE: src\components\ProjectCard.jsx
+================================================================================
+
+import { useRef } from 'react'
+import { useFadeIn } from '../hooks/useFadeIn.js'
+
+export default function ProjectCard({ project }) {
+  const ref = useRef(null)
+  useFadeIn(ref)
+  return (
+    <div className="card fade" ref={ref} style={{ opacity: 0 }}>
+      <h3>{project.name}</h3>
+      <div className="stack">{project.stack}</div>
+      <p>{project.desc}</p>
+      {project.link && (
+        <a className="gh" href={project.link} target="_blank" rel="noopener">Live URL →</a>
+      )}
+    </div>
+  )
+}
+
+
+
+================================================================================
+FILE: src\components\Projects.jsx
+================================================================================
+
+import { projects } from '../data/content.js'
+import ProjectCard from './ProjectCard.jsx'
+
+export default function Projects() {
+  return (
+    <section id="builds">
+      <div className="wrap">
+        <div className="sec-head">
+          <h2>Selected builds</h2>
+          <span className="idx">{String(projects.length).padStart(2, '0')} systems</span>
+        </div>
+        <div className="grid">
+          {projects.map(p => <ProjectCard key={p.name} project={p} />)}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+
+================================================================================
+FILE: src\components\Scene3D.jsx
+================================================================================
+
+import { useEffect, useRef } from 'react'
+import * as THREE from 'three'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+
+gsap.registerPlugin(ScrollTrigger)
+
+// Persistent 3D background: starfield, deep black hole with accretion disk,
+// and solar system attached to camera drifting as a constant backdrop.
+export default function Scene3D({ ready }) {
+  const canvasRef = useRef(null)
+
+  useEffect(() => {
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const canvas = canvasRef.current
+    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true })
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+    renderer.setSize(window.innerWidth, window.innerHeight)
+    const scene = new THREE.Scene()
+    scene.fog = new THREE.FogExp2(0x0a121e, 0.05)
+    const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 100)
+    camera.position.z = 7
+
+    const ACC = 0xe7a23d, DIM = 0x8b99aa
+    const wireMesh = (geo, color, opacity) =>
+      new THREE.LineSegments(new THREE.EdgesGeometry(geo), new THREE.LineBasicMaterial({ color, transparent: true, opacity }))
+
+    function glowSprite(hex, size, opacity) {
+      const cv = document.createElement('canvas')
+      cv.width = cv.height = 128
+      const ctx = cv.getContext('2d')
+      const c = '#' + hex.toString(16).padStart(6, '0')
+      const g = ctx.createRadialGradient(64, 64, 0, 64, 64, 64)
+      g.addColorStop(0, c + 'ff')
+      g.addColorStop(0.35, c + '88')
+      g.addColorStop(1, c + '00')
+      ctx.fillStyle = g
+      ctx.fillRect(0, 0, 128, 128)
+      const spr = new THREE.Sprite(new THREE.SpriteMaterial({
+        map: new THREE.CanvasTexture(cv), transparent: true, opacity,
+        blending: THREE.AdditiveBlending, depthWrite: false
+      }))
+      spr.scale.set(size, size, 1)
+      return spr
+    }
+
+    // Starfield spanning scroll depth
+    const starCount = 300
+    const starGeo = new THREE.BufferGeometry()
+    const starPos = new Float32Array(starCount * 3)
+    for (let i = 0; i < starCount; i++) {
+      starPos[i * 3] = (Math.random() - 0.5) * 18
+      starPos[i * 3 + 1] = Math.random() * -32 + 4
+      starPos[i * 3 + 2] = (Math.random() - 0.5) * 12 - 2
+    }
+    starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3))
+    scene.add(new THREE.Points(starGeo, new THREE.PointsMaterial({ color: DIM, size: 0.045, transparent: true, opacity: 0.65 })))
+
+    // Black Hole — event horizon + accretion disk with Keplerian differential rotation
+    const holeGroup = new THREE.Group()
+    holeGroup.add(new THREE.Mesh(new THREE.SphereGeometry(1, 32, 32), new THREE.MeshBasicMaterial({ color: 0x000000 })))
+    holeGroup.add(glowSprite(ACC, 7, 0.5))
+    holeGroup.add(glowSprite(0xffefd1, 3.2, 0.8))
+
+    const diskCount = 500
+    const diskR = new Float32Array(diskCount)
+    const diskA = new Float32Array(diskCount)
+    const diskY = new Float32Array(diskCount)
+    const diskGeo = new THREE.BufferGeometry()
+    const diskPos = new Float32Array(diskCount * 3)
+    const diskCol = new Float32Array(diskCount * 3)
+    const hot = new THREE.Color(0xffefd1), mid = new THREE.Color(ACC), cool = new THREE.Color(DIM)
+    for (let i = 0; i < diskCount; i++) {
+      const r = 1.45 + Math.pow(Math.random(), 1.6) * 2.6
+      diskR[i] = r
+      diskA[i] = Math.random() * Math.PI * 2
+      diskY[i] = (Math.random() - 0.5) * 0.1
+      const t = THREE.MathUtils.clamp((r - 1.45) / 2.6, 0, 1)
+      const c = t < 0.35 ? hot.clone().lerp(mid, t / 0.35) : mid.clone().lerp(cool, (t - 0.35) / 0.65)
+      diskCol[i * 3] = c.r
+      diskCol[i * 3 + 1] = c.g
+      diskCol[i * 3 + 2] = c.b
+    }
+    diskGeo.setAttribute('position', new THREE.BufferAttribute(diskPos, 3))
+    diskGeo.setAttribute('color', new THREE.BufferAttribute(diskCol, 3))
+    holeGroup.add(new THREE.Points(diskGeo, new THREE.PointsMaterial({
+      size: 0.055, vertexColors: true, transparent: true, opacity: 0.9,
+      blending: THREE.AdditiveBlending, depthWrite: false
+    })))
+    const ringPts = new THREE.EllipseCurve(0, 0, 2.7, 2.7 * 0.38).getPoints(80).map(p => new THREE.Vector3(p.x, 0, p.y))
+    holeGroup.add(new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(ringPts), new THREE.LineBasicMaterial({ color: ACC, transparent: true, opacity: 0.25 })))
+    holeGroup.rotation.x = 0.35
+    holeGroup.position.set(1.5, -19, -1)
+    scene.add(holeGroup)
+
+    function updateDisk() {
+      const pos = diskGeo.attributes.position.array
+      for (let i = 0; i < diskCount; i++) {
+        diskA[i] += 0.75 / Math.pow(diskR[i], 1.5)
+        pos[i * 3] = Math.cos(diskA[i]) * diskR[i]
+        pos[i * 3 + 1] = diskY[i]
+        pos[i * 3 + 2] = Math.sin(diskA[i]) * diskR[i] * 0.38
+      }
+      diskGeo.attributes.position.needsUpdate = true
+    }
+
+    // Solar system — attached to camera as constant backdrop
+    const solarGroup = new THREE.Group()
+    solarGroup.add(wireMesh(new THREE.IcosahedronGeometry(0.85, 1), ACC, 0.6))
+    solarGroup.add(glowSprite(ACC, 3.6, 0.55))
+    const planetSpecs = [
+      { r: 1.6, size: 0.08, speed: 0.006, color: DIM },
+      { r: 2.3, size: 0.12, speed: 0.004, color: ACC },
+      { r: 3.0, size: 0.06, speed: 0.003, color: DIM },
+      { r: 3.8, size: 0.15, speed: 0.0022, color: DIM },
+      { r: 4.6, size: 0.05, speed: 0.0017, color: ACC }
+    ]
+    const planets = planetSpecs.map(d => {
+      const mesh = new THREE.Mesh(new THREE.SphereGeometry(d.size, 10, 10), new THREE.MeshBasicMaterial({ color: d.color }))
+      const orbitPts = new THREE.EllipseCurve(0, 0, d.r, d.r * 0.88).getPoints(64).map(p => new THREE.Vector3(p.x, 0, p.y))
+      solarGroup.add(new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(orbitPts), new THREE.LineBasicMaterial({ color: DIM, transparent: true, opacity: 0.16 })))
+      solarGroup.add(mesh)
+      return { mesh, r: d.r, speed: d.speed, angle: Math.random() * Math.PI * 2 }
+    })
+    solarGroup.rotation.x = 0.55
+    solarGroup.position.set(-1.5, 0.8, -14)
+    camera.add(solarGroup)
+    scene.add(camera)
+
+    let mx = 0, my = 0
+    const onMouseMove = e => {
+      mx = e.clientX / window.innerWidth - 0.5
+      my = e.clientY / window.innerHeight - 0.5
+    }
+    const onResize = () => {
+      camera.aspect = window.innerWidth / window.innerHeight
+      camera.updateProjectionMatrix()
+      renderer.setSize(window.innerWidth, window.innerHeight)
+    }
+    window.addEventListener('mousemove', onMouseMove)
+    window.addEventListener('resize', onResize)
+
+    let frameId
+    function animate() {
+      frameId = requestAnimationFrame(animate)
+      if (!reduced) {
+        updateDisk()
+        holeGroup.rotation.y += 0.0006
+        solarGroup.rotation.y += 0.0006
+        planets.forEach(p => {
+          p.angle += p.speed
+          p.mesh.position.set(Math.cos(p.angle) * p.r, 0, Math.sin(p.angle) * p.r * 0.88)
+        })
+        scene.rotation.y += (mx * 0.12 - scene.rotation.y) * 0.02
+        scene.rotation.x += (-my * 0.08 - scene.rotation.x) * 0.02
+      }
+      renderer.render(scene, camera)
+    }
+    animate()
+
+    const depth = -24
+    const scrollTrig = ScrollTrigger.create({
+      trigger: document.body, start: 'top top', end: 'bottom bottom', scrub: 0.6,
+      onUpdate: self => { camera.position.y = self.progress * depth }
+    })
+
+    return () => {
+      cancelAnimationFrame(frameId)
+      window.removeEventListener('mousemove', onMouseMove)
+      window.removeEventListener('resize', onResize)
+      scrollTrig.kill()
+      renderer.dispose()
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!ready) return
+    gsap.to(canvasRef.current, { opacity: 1, duration: 1.4, ease: 'power2.out' })
+  }, [ready])
+
+  return <canvas id="bg-canvas" ref={canvasRef} />
+}
+
+
+
+================================================================================
+FILE: src\components\SingularityOverlay.jsx
+================================================================================
+
+
+
+
+================================================================================
+FILE: src\components\Skills.jsx
+================================================================================
+
+import { skills } from '../data/content.js'
+
+// Official CDN logos for technologies
+const LOGO_MAP = {
+  // Languages
+  'Java': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg',
+  'JavaScript': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg',
+  'Python': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg',
+  'C++': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cplusplus/cplusplus-original.svg',
+  'SQL': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg',
+  'HTML5/CSS3': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg',
+
+  // Frameworks
+  'React.js': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg',
+  'Angular': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/angularjs/angularjs-original.svg',
+  'Spring Boot': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/spring/spring-original.svg',
+  'FastAPI': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/fastapi/fastapi-original.svg',
+  'Node.js': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg',
+  'Express.js': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/express/express-original.svg',
+  'Redux': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/redux/redux-original.svg',
+
+  // Databases
+  'Oracle SQL': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/oracle/oracle-original.svg',
+  'MySQL': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg',
+  'MongoDB': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original.svg',
+  'Redis': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/redis/redis-original.svg',
+  'Firebase': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/firebase/firebase-plain.svg',
+
+  // Cloud, DevOps & Tools
+  'Docker': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg',
+  'Kubernetes': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/kubernetes/kubernetes-plain.svg',
+  'AWS': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/amazonwebservices/amazonwebservices-original-wordmark.svg',
+  'Git': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg',
+  'GitLab': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/gitlab/gitlab-original.svg',
+  'SVN': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/subversion/subversion-original.svg',
+  'Oracle WebLogic': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/oracle/oracle-original.svg',
+  'WinSCP': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/ssh/ssh-original.svg'
+}
+
+export default function Skills() {
+  return (
+    <section>
+      <div className="wrap">
+        <div className="sec-head"><h2>Toolset</h2></div>
+        {Object.entries(skills).map(([label, items]) => (
+          <div className="skillgrp" key={label}>
+            <div className="label">{label}</div>
+            <div className="chips">
+              {items.map(item => {
+                const icon = LOGO_MAP[item]
+                const isTejCD = item.includes('tejCD')
+                return (
+                  <span className={`chip ${isTejCD ? 'chip-highlight' : ''}`} key={item}>
+                    {icon ? (
+                      <img
+                        src={icon}
+                        alt={item}
+                        className="chip-icon"
+                        loading="lazy"
+                        onError={e => { e.currentTarget.style.display = 'none' }}
+                      />
+                    ) : (
+                      <span className="chip-bullet">{isTejCD ? '🚀' : '◈'}</span>
+                    )}
+                    {item}
+                  </span>
+                )
+              })}
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  )
+}
+
+
+================================================================================
+FILE: src\components\Writing.jsx
+================================================================================
+
+import { useRef } from 'react'
+import { useFadeIn } from '../hooks/useFadeIn.js'
+
+export default function Writing() {
+    const ref = useRef(null)
+    useFadeIn(ref)
+
+    return (
+        <section id="series">
+            <div className="wrap">
+                <div className="sec-head">
+                    <h2>Engineering & Insights</h2>
+                    <span className="idx">Concepts over syntax</span>
+                </div>
+
+                <div className="insights-container fade" ref={ref} style={{ opacity: 0 }}>
+                    {/* Left: Summary and Highlights */}
+                    <div className="insights-details">
+                        <div className="insight-card">
+                            <span className="badge">Featured Series</span>
+                            <h3>Syntax-Free Backend Engineering</h3>
+                            <p>
+                                We put way too much importance on language labels. My LinkedIn educational series strips away language syntax to break down backend engineering through <b>core architectural principles</b>—distributed consensus, database indexing, race conditions, caching strategies, and concurrency patterns.
+                            </p>
+                            <a
+                                href="https://www.linkedin.com/in/tejas-mundhe"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="series-link"
+                            >
+                                Follow the series on LinkedIn →
+                            </a>
+                        </div>
+
+                        <div className="insight-grid-2">
+                            <div className="insight-subcard">
+                                <div className="subcard-stat">1,500+</div>
+                                <div className="subcard-title">DSA Problems Solved</div>
+                                <p>
+                                    Mastered algorithmic patterns across platforms (LeetCode, GFG, Codeforces). Deep intuition for Graph Theory, Dynamic Programming, and Concurrency synchronization.
+                                </p>
+                            </div>
+
+                            <div className="insight-subcard">
+                                <div className="subcard-stat">HLD / LLD</div>
+                                <div className="subcard-title">System Architecture</div>
+                                <p>
+                                    Practical mastery of High-Level & Low-Level Design: Microservices decomposition, distributed STOMP record-locking, event-driven pipelines, and schema partitioning.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Right: Live LinkedIn Post Embed */}
+                    <div className="insights-embed-box">
+                        <div className="embed-wrapper">
+                            <iframe
+                                src="https://www.linkedin.com/embed/feed/update/urn:li:share:7508180392978305024?collapsed=1"
+                                height="673"
+                                width="504"
+                                frameBorder="0"
+                                allowFullScreen=""
+                                title="Tejas Mundhe LinkedIn Post - Syntax-Free Backend"
+                            />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    )
+}
+
+
+================================================================================
+FILE: src\data\content.js
+================================================================================
+
+export const experience = [
+  {
+    title: 'Software Development Engineer',
+    company: 'SBI General Insurance',
+    dates: 'June 2025 — Present · Thane, India',
+    points: [
+      'Architected and delivered 7 enterprise-grade in-house platforms (4 built from scratch), maintaining 99.9% uptime and earning formal commendation from the CIO.',
+      'Designed resilient, microservices-driven RESTful architectures within an Agile Scrum framework, boosting system scalability by 30%.',
+      'Engineered in-house deployment automation and CI/CD pipelines (tejCD), streamlining release rollouts across Oracle WebLogic servers, Docker containers, and hybrid environments.',
+      'Enforced enterprise-level Information Security compliance across all releases, achieving a flawless record of zero audit vulnerabilities.',
+      'Maintained 5 mission-critical production platforms (NCB, IIB, MCRS, EMS, Vehicle Inspection), resolving 200+ P1/P2 operational incidents with a 100% SLA resolution rate.'
+    ]
+  },
+  {
+    title: 'Integration Engineer Intern',
+    company: 'Hyperverge',
+    dates: 'Jan 2025 — June 2025 · Mumbai, India',
+    points: [
+      'Spearheaded enterprise KYC REST API integrations for tier-1 financial clients (SBI Life, HDFC Pension), driving a 25% uplift in B2B data throughput.',
+      'Diagnosed and eliminated cross-functional technical bottlenecks, slashing client onboarding turnaround time by 30%.'
+    ]
+  }
+];
+
+export const projects = [
+
+
+  {
+    name: 'Partner Service Hub',
+    stack: 'React · Redux · Spring Boot · Redis · Spring Security · JWT · Oracle DB',
+    desc: 'Architected a centralized, high-throughput B2B partner portal enabling thousands of insurance agents to execute seamless policy renewals, instant document downloads, and real-time endorsements. Built deep integrations into SBI General core modules backed by Redis caching and JWT role-based access control, scaling system traffic capacity by 120%.',
+    link: 'https://secure.sbigeneral.in/PHS#/auth'
+  },
+  {
+    name: 'Customer Health Claim Intimation Portal',
+    stack: 'Angular · Spring Boot · AWS Bedrock · Multithreading',
+    desc: 'Built a high-traffic, customer-facing portal handling 1,000+ daily users, providing instant claim intimation ID generation and real-time claim lifecycle tracking. Engineered an intelligent health document triage engine utilizing AWS Bedrock and multithreaded TF-IDF text extraction to accurately classify medical records on upload.',
+    link: 'https://www.sbigeneral.in/claim/claims-status-and-intimation'
+  },
+
+  {
+    name: 'Commercial Claim Management System',
+    stack: 'React · Redux · Spring Boot · STOMP WebSockets · Oracle DB',
+    desc: 'Engineered an end-to-end commercial claims engine from scratch featuring real-time STOMP WebSocket distributed record-locking to eliminate race conditions and guarantee 100% transactional data integrity. Designed an intuitive, component-driven UI with lazy loading and Redux state management—improving frontend responsiveness by 60%. Integrated complete multi-tier RBAC, an agent settlement/payment pipeline, and dynamic MIS reporting.'
+  },
+
+  {
+    name: 'tejCD — Custom CI/CD & Deployment Engine',
+    stack: 'Node.js · WebSockets · Docker · Bash · Oracle WebLogic · Git · SVN',
+    desc: 'Engineered a lightweight, proprietary CI/CD orchestration engine from scratch to automate end-to-end multi-tier deployments across Oracle WebLogic application servers and container runtimes. Features real-time build log streaming via WebSockets, automated artifact versioning, zero-downtime rolling restart triggers, and integrated webhook/polling support across both Git and legacy SVN repositories.'
+  },
+
+  {
+    name: 'Biometric Vendor Attendance & CR Tracker',
+    stack: 'FastAPI · Python · FaceNet-512 · Cosine Similarity · Spring Boot · React · SQL',
+    desc: 'Created a proprietary enterprise governance platform automating internal and third-party vendor onboarding, geo-fenced biometric tracking, and change-request workflows. Integrated FaceNet-512 facial embeddings with cosine similarity checks and GPS coordinate verification to eradicate buddy-punching, cutting fraudulent check-ins by 99%.'
+  },
+  {
+    name: 'VisionAid Exam System',
+    stack: 'React · Node.js · Raspberry Pi · MySQL · Hardware Integration',
+    desc: 'Designed an assistive MCQ testing ecosystem for visually impaired candidates, pairing custom 6-key tactile hardware with real-time text-to-speech synthesis to cut evaluation overhead by 40%. Awarded Best Software Project out of 400+ competitive submissions and presented directly to Hon. Sharad Pawar.',
+    link: 'https://github.com/tejasrocks'
+  }
+];
+
+export const skills = {
+  Languages: ['Java', 'JavaScript', 'Python', 'C++', 'SQL', 'HTML5/CSS3'],
+  Frameworks: ['React.js', 'Angular', 'Spring Boot', 'FastAPI', 'Node.js', 'Express.js', 'Redux'],
+  Databases: ['Oracle SQL', 'MySQL', 'MongoDB', 'Firebase'],
+  'Cloud, DevOps & Tools': [
+    'Docker',
+    'Kubernetes',
+    'AWS',
+    'Git',
+    'GitLab',
+    'SVN',
+    'Oracle WebLogic',
+    'WinSCP',
+    'Redis',
+    'tejCD (In-house CI/CD)'
+  ],
+  Practices: [
+    'System Design (HLD/LLD)',
+    'Distributed Systems',
+    'Microservices Architecture',
+    'Scalable REST APIs',
+    'Data Structures & Algorithms',
+    'Concurrency & Locking',
+    'Information Security & JWT',
+    'Agile Scrum'
+  ]
+};
+
+export const education = {
+  school: 'Sardar Patel Institute of Technology',
+  degree: 'B.Tech, Computer Science (AI & ML)',
+  dates: 'June 2021 — March 2025 · CGPA 8.21'
+};
+
+export const contact = {
+  email: 'tejasmundhe07@gmail.com',
+  phone: '+91 7720998676',
+  linkedin: 'https://www.linkedin.com/in/tejas-mundhe-578bb6232/',
+  leetcode: 'https://leetcode.com/u/tejasmundhe123/'
+};
+
+
+================================================================================
+FILE: src\hooks\useFadeIn.js
+================================================================================
+
+import { useEffect } from 'react'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+
+gsap.registerPlugin(ScrollTrigger)
+
+// Fades an element to opacity 1 the first time it scrolls into view.
+export function useFadeIn(ref, { start = 'top 88%', delay = 0 } = {}) {
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const st = ScrollTrigger.create({
+      trigger: el,
+      start,
+      once: true,
+      onEnter: () => gsap.to(el, { opacity: 1, duration: 0.6, ease: 'power1.out', delay })
+    })
+    return () => st.kill()
+  }, [ref, start, delay])
+}
+
+
+
+================================================================================
+FILE: src\index.css
+================================================================================
+
+:root {
+  --bg: #0A121E;
+  --bg2: #0D1626;
+  --ink: #ECEFF3;
+  --dim: #8B99AA;
+  --line: rgba(139, 153, 170, .22);
+  --accent: #E7A23D;
+  --accent-ink: #241705;
+  --mono: 'IBM Plex Mono', ui-monospace, Menlo, monospace;
+  --disp: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0
+}
+
+html {
+  scroll-behavior: smooth
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--disp);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: .001ms !important;
+    transition-duration: .001ms !important
+  }
+}
+
+a {
+  color: inherit
+}
+
+.wrap {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 32px
+}
+
+#bg-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  opacity: 0;
+  pointer-events: none
+}
+
+/* loader */
+#loader {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column
+}
+
+.loader-label {
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--dim);
+  letter-spacing: .02em
+}
+
+.loader-label .p1 {
+  color: var(--accent)
+}
+
+.loader-bar {
+  width: 220px;
+  height: 1px;
+  background: var(--line);
+  position: relative;
+  margin-top: 16px;
+  overflow: hidden
+}
+
+.loader-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 0%;
+  background: var(--accent)
+}
+
+/* nav */
+nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 32px;
+  font-family: var(--mono);
+  font-size: 13px;
+  letter-spacing: .02em
+}
+
+.logo {
+  font-family: var(--disp);
+  font-weight: 700;
+  font-size: 18px
+}
+
+.logo::after {
+  content: '.';
+  color: var(--accent)
+}
+
+.navlinks {
+  display: flex;
+  gap: 28px;
+  align-items: center
+}
+
+.navlinks a {
+  text-decoration: none;
+  color: var(--dim);
+  position: relative;
+  padding-bottom: 2px
+}
+
+.navlinks a:hover {
+  color: var(--ink)
+}
+
+.navlinks a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 0;
+  height: 1px;
+  background: var(--accent);
+  transition: width .25s ease
+}
+
+.navlinks a:hover::after {
+  width: 100%
+}
+
+.nav-singularity-btn {
+  background: rgba(231, 162, 61, 0.12);
+  color: var(--accent);
+  border: 1px solid rgba(231, 162, 61, 0.3);
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  cursor: pointer;
+  transition: all .25s ease;
+}
+
+.nav-singularity-btn:hover {
+  background: rgba(231, 162, 61, 0.22);
+  border-color: var(--accent);
+  box-shadow: 0 0 12px rgba(231, 162, 61, 0.25);
+  transform: scale(1.03);
+}
+
+.nav-singularity-btn .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 6px var(--accent);
+}
+
+.nav-singularity-btn.active {
+  background: rgba(255, 100, 50, 0.2);
+  color: #ff9e66;
+  border-color: #ff7a36;
+  animation: badgeBlink 1.2s infinite;
+}
+
+.nav-singularity-btn.active .dot {
+  background: #ff7a36;
+  box-shadow: 0 0 8px #ff7a36;
+}
+
+/* hero */
+.hero {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 120px 32px 60px
+}
+
+.hero-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  width: 100%
+}
+
+.hero h1 {
+  font-size: clamp(2.6rem, 7.5vw, 5.4rem);
+  font-weight: 700;
+  line-height: 1.02;
+  letter-spacing: -.02em;
+  overflow: hidden
+}
+
+.hero h1 span {
+  display: inline-block;
+  will-change: transform
+}
+
+.hero p.role {
+  font-family: var(--mono);
+  color: var(--accent);
+  font-size: 14px;
+  margin-top: 18px;
+  letter-spacing: .02em
+}
+
+.hero p.tag {
+  max-width: 520px;
+  color: var(--dim);
+  font-size: 17px;
+  line-height: 1.6;
+  margin-top: 16px
+}
+
+.meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  margin-top: 40px;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--dim)
+}
+
+.meta-row div {
+  padding-right: 20px;
+  margin-right: 20px;
+  border-right: 1px solid var(--line)
+}
+
+.meta-row div:last-child {
+  border-right: none
+}
+
+.cta-row {
+  display: flex;
+  gap: 14px;
+  margin-top: 44px;
+  flex-wrap: wrap;
+  align-items: center
+}
+
+.btn {
+  font-family: var(--mono);
+  font-size: 13.5px;
+  padding: 13px 22px;
+  border-radius: 3px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  background: transparent;
+  border: none
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-weight: 600
+}
+
+.btn-outline {
+  border: 1px solid var(--line);
+  color: var(--ink);
+  background: rgba(10, 18, 30, 0.4);
+  backdrop-filter: blur(8px)
+}
+
+.btn-outline:hover {
+  border-color: var(--accent);
+  color: var(--accent)
+}
+
+/* email copied state */
+.email-btn.copied {
+  border-color: #4ade80;
+  color: #4ade80;
+  background: rgba(74, 222, 128, 0.1);
+}
+
+section {
+  position: relative;
+  z-index: 1;
+  padding: 90px 0
+}
+
+.sec-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 56px;
+  gap: 20px
+}
+
+.sec-head h2 {
+  font-size: clamp(1.6rem, 3.4vw, 2.2rem);
+  font-weight: 700;
+  letter-spacing: -.01em
+}
+
+.sec-head .idx {
+  font-family: var(--mono);
+  color: var(--dim);
+  font-size: 13px
+}
+
+/* experience timeline */
+.tl {
+  position: relative;
+  padding-left: 32px
+}
+
+.tl-line {
+  position: absolute;
+  left: 5px;
+  top: 6px;
+  bottom: 6px;
+  width: 1px;
+  background: var(--line)
+}
+
+.tl-progress {
+  position: absolute;
+  left: 5px;
+  top: 6px;
+  width: 1px;
+  background: var(--accent);
+  height: 0
+}
+
+.role {
+  position: relative;
+  margin-bottom: 64px
+}
+
+.role:last-child {
+  margin-bottom: 0
+}
+
+.role::before {
+  content: '';
+  position: absolute;
+  left: -32px;
+  top: 6px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--bg);
+  border: 2px solid var(--accent)
+}
+
+.role h3 {
+  font-size: 1.3rem;
+  font-weight: 700
+}
+
+.role .co {
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--accent);
+  margin-top: 6px
+}
+
+.role .dates {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--dim);
+  margin-top: 2px
+}
+
+.role ul {
+  margin-top: 16px;
+  max-width: 680px
+}
+
+.role li {
+  list-style: none;
+  color: var(--dim);
+  font-size: 14.5px;
+  line-height: 1.65;
+  padding-left: 16px;
+  position: relative;
+  margin-bottom: 8px
+}
+
+.role li::before {
+  content: '—';
+  position: absolute;
+  left: 0;
+  color: var(--line)
+}
+
+/* projects - clean 6-card rectangular grid */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 20px
+}
+
+.card {
+  border: 1px solid var(--line);
+  padding: 28px;
+  border-radius: 6px;
+  background: rgba(10, 18, 30, 0.78);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: border-color 0.25s ease, transform 0.25s ease;
+}
+
+.card:hover {
+  border-color: rgba(231, 162, 61, 0.5);
+  transform: translateY(-2px);
+}
+
+.card:nth-child(1) {
+  grid-column: span 7
+}
+
+.card:nth-child(2) {
+  grid-column: span 5
+}
+
+.card:nth-child(3) {
+  grid-column: span 5
+}
+
+.card:nth-child(4) {
+  grid-column: span 7
+}
+
+.card:nth-child(5) {
+  grid-column: span 6
+}
+
+.card:nth-child(6) {
+  grid-column: span 6
+}
+
+.card h3 {
+  font-size: 1.2rem;
+  font-weight: 700
+}
+
+.card .stack {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--accent);
+  margin-top: 8px;
+  letter-spacing: .01em
+}
+
+.card p {
+  color: var(--dim);
+  font-size: 14px;
+  line-height: 1.6;
+  margin-top: 14px
+}
+
+.card a.gh {
+  display: inline-block;
+  margin-top: 16px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--ink);
+  text-decoration: none;
+  border-bottom: 1px solid var(--line)
+}
+
+.card a.gh:hover {
+  border-color: var(--accent);
+  color: var(--accent)
+}
+
+/* Engineering & Insights Section (LinkedIn Series + DSA) */
+.insights-container {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 28px;
+  align-items: start;
+}
+
+.insights-details {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.insight-card {
+  border: 1px solid var(--line);
+  padding: 32px;
+  border-radius: 6px;
+  background: rgba(10, 18, 30, 0.8);
+  backdrop-filter: blur(12px);
+}
+
+.insight-card .badge {
+  font-family: var(--mono);
+  font-size: 11px;
+  background: rgba(231, 162, 61, 0.15);
+  color: var(--accent);
+  border: 1px solid rgba(231, 162, 61, 0.3);
+  padding: 4px 10px;
+  border-radius: 999px;
+  display: inline-block;
+  margin-bottom: 14px;
+}
+
+.insight-card h3 {
+  font-size: 1.45rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: var(--ink);
+}
+
+.insight-card p {
+  font-size: 14.5px;
+  line-height: 1.7;
+  color: var(--dim);
+  margin-bottom: 20px;
+}
+
+.insight-card p b {
+  color: var(--ink);
+}
+
+.series-link {
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--accent);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-bottom: 1px solid rgba(231, 162, 61, 0.4);
+  padding-bottom: 2px;
+  transition: all 0.2s ease;
+}
+
+.series-link:hover {
+  border-color: var(--accent);
+  transform: translateX(3px);
+}
+
+.insight-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.insight-subcard {
+  border: 1px solid var(--line);
+  padding: 22px;
+  border-radius: 6px;
+  background: rgba(10, 18, 30, 0.75);
+  backdrop-filter: blur(10px);
+}
+
+.subcard-stat {
+  font-family: var(--disp);
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+.subcard-title {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--ink);
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.insight-subcard p {
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--dim);
+}
+
+.insights-embed-box {
+  display: flex;
+  justify-content: center;
+}
+
+.embed-wrapper {
+  width: 100%;
+  max-width: 504px;
+  background: rgba(10, 18, 30, 0.85);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.5);
+}
+
+.embed-wrapper iframe {
+  width: 100%;
+  display: block;
+  background: #fff;
+}
+
+/* skills with logos */
+.skillgrp {
+  margin-bottom: 28px
+}
+
+.skillgrp .label {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--dim);
+  margin-bottom: 12px
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px
+}
+
+.chip {
+  font-family: var(--mono);
+  font-size: 12.5px;
+  border: 1px solid var(--line);
+  padding: 7px 13px;
+  border-radius: 4px;
+  color: var(--ink);
+  background: rgba(10, 18, 30, 0.72);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.chip:hover {
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+
+.chip-highlight {
+  border-color: rgba(231, 162, 61, 0.5);
+  background: rgba(231, 162, 61, 0.12);
+  color: #ffefd1;
+}
+
+.chip-icon {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.chip-bullet {
+  color: var(--accent);
+  font-size: 11px;
+}
+
+/* education / contact */
+.edu-line {
+  font-family: var(--mono);
+  font-size: 14px;
+  color: var(--dim);
+  border-left: 1px solid var(--accent);
+  padding-left: 20px
+}
+
+.edu-line b {
+  color: var(--ink);
+  font-family: var(--disp)
+}
+
+.term {
+  font-family: var(--mono);
+  font-size: 14.5px;
+  line-height: 2.1;
+  background: rgba(10, 18, 30, 0.72);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--line);
+  padding: 24px;
+  border-radius: 6px;
+}
+
+.term .p1 {
+  color: var(--accent)
+}
+
+.term a {
+  text-decoration: none;
+  color: var(--ink);
+  border-bottom: 1px solid var(--line)
+}
+
+.term a:hover {
+  border-color: var(--accent);
+  color: var(--accent)
+}
+
+footer {
+  position: relative;
+  z-index: 1;
+  padding: 40px 32px 60px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--dim)
+}
+
+@media(max-width:880px) {
+  .insights-container {
+    grid-template-columns: 1fr;
+  }
+
+  .insights-embed-box {
+    margin-top: 10px;
+  }
+}
+
+@media(max-width:768px) {
+  .card:nth-child(n) {
+    grid-column: span 12
+  }
+
+  .insight-grid-2 {
+    grid-template-columns: 1fr
+  }
+
+  .meta-row div {
+    border-right: none;
+    padding-right: 0;
+    margin-right: 0;
+    width: 100%;
+    margin-bottom: 6px
+  }
+
+  .tl {
+    padding-left: 24px
+  }
+
+  .role::before {
+    left: -24px
+  }
+
+  .cta-row {
+    flex-direction: column;
+    align-items: stretch
+  }
+
+  .btn {
+    text-align: center;
+    justify-content: center
+  }
+}
+
+
+================================================================================
+FILE: src\main.jsx
+================================================================================
+
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import App from './App.jsx'
+import './index.css'
+
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+)
+
+
+
+================================================================================
+FILE: src\utils\asteroidGenerator.js
+================================================================================
+
+import * as THREE from 'three'
+
+// Fast, self-contained 3D Simplex-like Perlin noise implementation
+class SimplexNoise3D {
+  constructor(seed = 1337) {
+    this.p = new Uint8Array(512)
+    const perm = new Uint8Array(256)
+    for (let i = 0; i < 256; i++) perm[i] = i
+    // Shuffle with simple LCG
+    let s = seed
+    for (let i = 255; i > 0; i--) {
+      s = (s * 1664525 + 1013904223) & 0xffffffff
+      const j = Math.abs(s) % (i + 1)
+      const tmp = perm[i]
+      perm[i] = perm[j]
+      perm[j] = tmp
+    }
+    for (let i = 0; i < 512; i++) {
+      this.p[i] = perm[i & 255]
+    }
+  }
+
+  dot(g, x, y, z) {
+    return g[0] * x + g[1] * y + g[2] * z
+  }
+
+  noise(x, y, z) {
+    const p = this.p
+    const grad3 = [
+      [1, 1, 0], [-1, 1, 0], [1, -1, 0], [-1, -1, 0],
+      [1, 0, 1], [-1, 0, 1], [1, 0, -1], [-1, 0, -1],
+      [0, 1, 1], [0, -1, 1], [0, 1, -1], [0, -1, -1]
+    ]
+
+    const X = Math.floor(x) & 255
+    const Y = Math.floor(y) & 255
+    const Z = Math.floor(z) & 255
+
+    x -= Math.floor(x)
+    y -= Math.floor(y)
+    z -= Math.floor(z)
+
+    const u = x * x * x * (x * (x * 6 - 15) + 10)
+    const v = y * y * y * (y * (y * 6 - 15) + 10)
+    const w = z * z * z * (z * (z * 6 - 15) + 10)
+
+    const A = p[X] + Y, AA = p[A] + Z, AB = p[A + 1] + Z
+    const B = p[X + 1] + Y, BA = p[B] + Z, BB = p[B + 1] + Z
+
+    const g000 = grad3[p[AA] % 12]
+    const g100 = grad3[p[BA] % 12]
+    const g010 = grad3[p[AB] % 12]
+    const g110 = grad3[p[BB] % 12]
+    const g001 = grad3[p[AA + 1] % 12]
+    const g101 = grad3[p[BA + 1] % 12]
+    const g011 = grad3[p[AB + 1] % 12]
+    const g111 = grad3[p[BB + 1] % 12]
+
+    const lerp = (a, b, t) => a + t * (b - a)
+
+    const x1 = lerp(this.dot(g000, x, y, z), this.dot(g100, x - 1, y, z), u)
+    const x2 = lerp(this.dot(g010, x, y - 1, z), this.dot(g110, x - 1, y - 1, z), u)
+    const y1 = lerp(x1, x2, v)
+
+    const x3 = lerp(this.dot(g001, x, y, z - 1), this.dot(g101, x - 1, y, z - 1), u)
+    const x4 = lerp(this.dot(g011, x, y - 1, z - 1), this.dot(g111, x - 1, y - 1, z - 1), u)
+    const y2 = lerp(x3, x4, v)
+
+    return lerp(y1, y2, w)
+  }
+
+  fbm(x, y, z, octaves = 4) {
+    let total = 0
+    let frequency = 1
+    let amplitude = 1
+    let maxValue = 0
+    for (let i = 0; i < octaves; i++) {
+      total += this.noise(x * frequency, y * frequency, z * frequency) * amplitude
+      maxValue += amplitude
+      amplitude *= 0.5
+      frequency *= 2.05
+    }
+    return total / maxValue
+  }
+}
+
+// Generate realistic rocky texture & bump map for asteroids
+export function generateAsteroidTextures() {
+  const size = 1024
+  const canvas = document.createElement('canvas')
+  canvas.width = size
+  canvas.height = size
+  const ctx = canvas.getContext('2d')
+
+  const bumpCanvas = document.createElement('canvas')
+  bumpCanvas.width = size
+  bumpCanvas.height = size
+  const bCtx = bumpCanvas.getContext('2d')
+
+  // Base stone tone
+  ctx.fillStyle = '#1c1e22'
+  ctx.fillRect(0, 0, size, size)
+
+  bCtx.fillStyle = '#808080'
+  bCtx.fillRect(0, 0, size, size)
+
+  const imgData = ctx.getImageData(0, 0, size, size)
+  const bumpData = bCtx.getImageData(0, 0, size, size)
+  const noiseGen = new SimplexNoise3D(42)
+
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      const idx = (y * size + x) * 4
+      const nx = x / size
+      const ny = y / size
+
+      // Multiple noise layers
+      const n1 = noiseGen.fbm(nx * 4, ny * 4, 1.2, 4)
+      const n2 = noiseGen.fbm(nx * 16, ny * 16, 2.5, 3)
+      const n3 = noiseGen.fbm(nx * 40, ny * 40, 5.0, 2)
+
+      const combined = n1 * 0.6 + n2 * 0.3 + n3 * 0.1
+
+      // Carbonaceous chondrite rock coloring (slate grey with iron/silicate mineral variations)
+      let r = 38 + combined * 45
+      let g = 39 + combined * 42
+      let b = 43 + combined * 48
+
+      // Occasional chondrule / metallic fleck
+      if (Math.sin(nx * 120 + ny * 130) > 0.96 && n2 > 0.2) {
+        r += 50
+        g += 45
+        b += 30
+      }
+
+      // Dark dust / regolith pockets
+      if (n1 < -0.2) {
+        r *= 0.65
+        g *= 0.65
+        b *= 0.65
+      }
+
+      imgData.data[idx] = Math.min(255, Math.max(0, r))
+      imgData.data[idx + 1] = Math.min(255, Math.max(0, g))
+      imgData.data[idx + 2] = Math.min(255, Math.max(0, b))
+      imgData.data[idx + 3] = 255
+
+      // Bump height (0-255)
+      const bumpVal = Math.min(255, Math.max(0, 128 + combined * 110))
+      bumpData.data[idx] = bumpVal
+      bumpData.data[idx + 1] = bumpVal
+      bumpData.data[idx + 2] = bumpVal
+      bumpData.data[idx + 3] = 255
+    }
+  }
+
+  ctx.putImageData(imgData, 0, 0)
+  bCtx.putImageData(bumpData, 0, 0)
+
+  // Stamp realistic crater circles with raised rims on both maps
+  const craters = [
+    { x: 320, y: 400, r: 80, depth: 40 },
+    { x: 740, y: 280, r: 65, depth: 35 },
+    { x: 520, y: 700, r: 95, depth: 50 },
+    { x: 200, y: 750, r: 45, depth: 25 },
+    { x: 800, y: 650, r: 50, depth: 28 },
+    { x: 450, y: 200, r: 40, depth: 20 },
+    { x: 650, y: 450, r: 35, depth: 18 }
+  ]
+
+  craters.forEach(c => {
+    // Crater shadow and rim
+    const grad = ctx.createRadialGradient(c.x, c.y, 0, c.x, c.y, c.r)
+    grad.addColorStop(0, 'rgba(12, 13, 16, 0.85)')
+    grad.addColorStop(0.7, 'rgba(25, 27, 32, 0.6)')
+    grad.addColorStop(0.9, 'rgba(75, 80, 88, 0.75)') // raised rim
+    grad.addColorStop(1, 'rgba(30, 32, 36, 0)')
+
+    ctx.fillStyle = grad
+    ctx.beginPath()
+    ctx.arc(c.x, c.y, c.r, 0, Math.PI * 2)
+    ctx.fill()
+
+    // Bump crater
+    const bGrad = bCtx.createRadialGradient(c.x, c.y, 0, c.x, c.y, c.r)
+    bGrad.addColorStop(0, 'rgba(40, 40, 40, 0.9)')
+    bGrad.addColorStop(0.75, 'rgba(80, 80, 80, 0.7)')
+    bGrad.addColorStop(0.92, 'rgba(220, 220, 220, 0.9)') // high rim
+    bGrad.addColorStop(1, 'rgba(128, 128, 128, 0)')
+
+    bCtx.fillStyle = bGrad
+    bCtx.beginPath()
+    bCtx.arc(c.x, c.y, c.r, 0, Math.PI * 2)
+    bCtx.fill()
+  })
+
+  const diffuseMap = new THREE.CanvasTexture(canvas)
+  diffuseMap.wrapS = THREE.RepeatWrapping
+  diffuseMap.wrapT = THREE.RepeatWrapping
+
+  const bumpMap = new THREE.CanvasTexture(bumpCanvas)
+  bumpMap.wrapS = THREE.RepeatWrapping
+  bumpMap.wrapT = THREE.RepeatWrapping
+
+  return { diffuseMap, bumpMap }
+}
+
+// Generate realistic cratered, irregular asteroid 3D geometry
+export function createRealisticAsteroidGeometry(radius = 1, detail = 4, seed = 100) {
+  const geometry = new THREE.IcosahedronGeometry(radius, detail)
+  const pos = geometry.attributes.position
+  const vertex = new THREE.Vector3()
+  const noise = new SimplexNoise3D(seed)
+
+  // Generate 8-12 crater centers distributed randomly on unit sphere
+  const craters = []
+  const craterCount = 10
+  for (let i = 0; i < craterCount; i++) {
+    const phi = Math.random() * Math.PI * 2
+    const theta = Math.acos(Math.random() * 2 - 1)
+    craters.push({
+      center: new THREE.Vector3(
+        Math.sin(theta) * Math.cos(phi),
+        Math.sin(theta) * Math.sin(phi),
+        Math.cos(theta)
+      ),
+      radius: 0.25 + Math.random() * 0.45,
+      depth: 0.15 + Math.random() * 0.2
+    })
+  }
+
+  // Elongation factors to make it non-spherical (boulder / potato shape like Asteroid Bennu/Eros)
+  const stretchX = 1.15 + (Math.sin(seed) * 0.15)
+  const stretchY = 0.88 + (Math.cos(seed) * 0.12)
+  const stretchZ = 1.02 + (Math.sin(seed * 2) * 0.1)
+
+  for (let i = 0; i < pos.count; i++) {
+    vertex.fromBufferAttribute(pos, i)
+
+    // Normalize to get spherical direction
+    const unit = vertex.clone().normalize()
+
+    // 1. Broad lumpy irregular shape with low-frequency noise
+    const lowNoise = noise.fbm(unit.x * 1.2, unit.y * 1.2, unit.z * 1.2, 3) * 0.35
+
+    // 2. Medium frequency rocky facets and ridges
+    const midNoise = noise.fbm(unit.x * 3.5, unit.y * 3.5, unit.z * 3.5, 3) * 0.14
+
+    // 3. High frequency micro rock roughness
+    const highNoise = noise.fbm(unit.x * 9.0, unit.y * 9.0, unit.z * 9.0, 2) * 0.05
+
+    let displacement = 1 + lowNoise + midNoise + highNoise
+
+    // 4. Crater depressions with raised rim walls
+    for (let c = 0; c < craters.length; c++) {
+      const cr = craters[c]
+      const dist = unit.distanceTo(cr.center)
+      if (dist < cr.radius) {
+        const factor = dist / cr.radius
+        // Bowl shape depression
+        const depression = -cr.depth * Math.cos(factor * Math.PI * 0.5)
+        // Raised circular rim
+        const rim = Math.sin(factor * Math.PI) * (cr.depth * 0.4)
+        displacement += (depression + rim) * (1 - factor * 0.3)
+      }
+    }
+
+    // Apply asymmetric boulder stretch
+    vertex.x = unit.x * radius * displacement * stretchX
+    vertex.y = unit.y * radius * displacement * stretchY
+    vertex.z = unit.z * radius * displacement * stretchZ
+
+    pos.setXYZ(i, vertex.x, vertex.y, vertex.z)
+  }
+
+  geometry.computeVertexNormals()
+  return geometry
+}
+
+
+
+================================================================================
+FILE: src\utils\soundEffects.js
+================================================================================
+
+// Self-contained Web Audio API cosmic sound synthesizer
+class SoundEffects {
+  constructor() {
+    this.ctx = null
+    this.isMuted = false
+    this.humOsc = null
+    this.humGain = null
+    this.noiseNode = null
+    this.noiseGain = null
+  }
+
+  init() {
+    if (!this.ctx) {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext
+      if (AudioCtx) {
+        this.ctx = new AudioCtx()
+      }
+    }
+    if (this.ctx && this.ctx.state === 'suspended') {
+      this.ctx.resume()
+    }
+  }
+
+  playSingularityIgnite() {
+    if (this.isMuted) return
+    this.init()
+    if (!this.ctx) return
+
+    const now = this.ctx.currentTime
+
+    // 1. Deep sub-bass drop (gravitational collapse)
+    const osc = this.ctx.createOscillator()
+    const gain = this.ctx.createGain()
+    osc.type = 'sine'
+    osc.frequency.setValueAtTime(140, now)
+    osc.frequency.exponentialRampToValueAtTime(32, now + 1.2)
+
+    gain.gain.setValueAtTime(0.4, now)
+    gain.gain.exponentialRampToValueAtTime(0.01, now + 2.0)
+
+    osc.connect(gain)
+    gain.connect(this.ctx.destination)
+    osc.start(now)
+    osc.stop(now + 2.0)
+
+    // 2. High-energy accretion hum
+    this.startSingularityHum()
+  }
+
+  startSingularityHum() {
+    if (this.isMuted || !this.ctx || this.humOsc) return
+    const now = this.ctx.currentTime
+
+    this.humOsc = this.ctx.createOscillator()
+    this.humGain = this.ctx.createGain()
+
+    this.humOsc.type = 'sawtooth'
+    this.humOsc.frequency.setValueAtTime(45, now)
+
+    // Low-pass filter for deep cosmic drone
+    const filter = this.ctx.createBiquadFilter()
+    filter.type = 'lowpass'
+    filter.frequency.setValueAtTime(160, now)
+
+    this.humGain.gain.setValueAtTime(0.001, now)
+    this.humGain.gain.linearRampToValueAtTime(0.12, now + 0.8)
+
+    this.humOsc.connect(filter)
+    filter.connect(this.humGain)
+    this.humGain.connect(this.ctx.destination)
+    this.humOsc.start(now)
+  }
+
+  stopSingularityHum() {
+    if (this.humGain && this.ctx) {
+      const now = this.ctx.currentTime
+      this.humGain.gain.linearRampToValueAtTime(0.0001, now + 0.5)
+      setTimeout(() => {
+        if (this.humOsc) {
+          try { this.humOsc.stop() } catch (_) {}
+          this.humOsc = null
+          this.humGain = null
+        }
+      }, 550)
+    }
+  }
+
+  playRestoreSupernova() {
+    if (this.isMuted) return
+    this.init()
+    if (!this.ctx) return
+
+    this.stopSingularityHum()
+
+    const now = this.ctx.currentTime
+
+    // White hole cosmic flash sound: rising pitch then crystal decay
+    const osc = this.ctx.createOscillator()
+    const gain = this.ctx.createGain()
+    osc.type = 'triangle'
+    osc.frequency.setValueAtTime(60, now)
+    osc.frequency.exponentialRampToValueAtTime(620, now + 0.4)
+    osc.frequency.exponentialRampToValueAtTime(180, now + 1.5)
+
+    gain.gain.setValueAtTime(0.35, now)
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 1.6)
+
+    osc.connect(gain)
+    gain.connect(this.ctx.destination)
+    osc.start(now)
+    osc.stop(now + 1.6)
+  }
+
+  toggleMute() {
+    this.isMuted = !this.isMuted
+    if (this.isMuted) {
+      this.stopSingularityHum()
+    }
+    return this.isMuted
+  }
+}
+
+export const soundFx = new SoundEffects()
+
+
+
+================================================================================
+FILE: vite.config.js
+================================================================================
+
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+
+export default defineConfig({
+  plugins: [react()]
+})
+
+
